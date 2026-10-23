@@ -1,0 +1,15 @@
+# Dependencies and limited source review
+
+Checked 2026-10-22 01:15 JST, before any runtime execution. No npm install or dependency lifecycle script was run.
+
+1. **Transformers.js 3.8.1**, Apache-2.0. The application uses the standalone CDN browser bundle `dist/transformers.min.js` with a pinned jsDelivr version. The package's `web.js` export is for a module-resolving environment and contains bare imports for `onnxruntime-common`/`onnxruntime-web`; it failed in the initial plain-browser worker. Source inspection identified this, and the bundled CDN entry has no static bare imports. Live HTTP GET confirmed 200, JavaScript MIME, CORS `*`, 888,173 bytes, SHA-256 `aa5002b70e789798da263f5f99c62bd3e8fcd0c119258a493c40c180648365fa`. Bundle runtime dependencies include ONNX Runtime Web. [Official source](https://github.com/huggingface/transformers.js/tree/3.8.1), [manifest](https://raw.githubusercontent.com/huggingface/transformers.js/3.8.1/package.json), [browser setup](https://huggingface.co/docs/transformers.js/v3.0.0/en/tutorials/vanilla-js).
+2. **Xenova/all-MiniLM-L6-v2**, Apache-2.0 ONNX conversion of sentence-transformers/all-MiniLM-L6-v2. Model revision pinned to `751bff37182d3f1213fa05d7196b954e230abad9` via the official Hub API. q8 WebAssembly inference, mean pooling and normalized embeddings. [ONNX model card](https://huggingface.co/Xenova/all-MiniLM-L6-v2), [original model card](https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2). The original card identifies English and truncation above 256 word pieces. A 500-character input limit is not proof that every input avoids token truncation.
+3. Runtime references **ONNX Runtime Web** (MIT). [Official project](https://github.com/microsoft/onnxruntime). Downloaded runtime/weights are external dependencies, not original application code.
+
+Read before execution: upstream `package.json`, `src/utils/hub.js`, `src/env.js`, original model card and model API metadata, saved as text under `dependency-review/`. Hub's browser `getFile` uses GET `fetch(urlOrPath)` for model files, with host `https://huggingface.co/` and a model/revision path. It does not put inference text into that fetch call. Application worker calls local inference with the input, never an inference HTTP endpoint. Application rendering uses `textContent`, not HTML interpretation.
+
+This is a limited review of the intended package, loading path and application data flow; it is not a full security audit of every transitive dependency or a proof against a compromised CDN. Only synthetic data is used in the preview. A dependency download can expose IP/connection metadata. No claim of fully isolated/offline operation is made.
+
+The UI, CSV parser, ranking, review journal and styles are original application work. The short pipeline invocation follows the documented API rather than copying a complete example application. No competitor code, article or design has been reused.
+
+Before a public repository is created, publish only explicitly selected application files; omit local server logs/PIDs, dependency review dumps, private workspace metadata and this contest's unpublished management notes.

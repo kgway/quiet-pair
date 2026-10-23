@@ -1,0 +1,13 @@
+id,text,note
+1,"<img src=x onerror=alert('xss')>",Literal markup must be displayed as text
+2,"<img src=y onerror=alert('xss')>",Literal markup must be displayed as text
+3,Your refund has been approved.,Meaning is opposite to row 4
+4,Your refund has been denied.,Meaning is opposite to row 3
+5,Allow access to the shared folder.,Meaning is opposite to row 6
+6,Prevent access to the shared folder.,Meaning is opposite to row 5
+7,"=HYPERLINK(""https://example.invalid"",""synthetic"")",Formula must be prefixed in audit
+8,"=HYPERLINK(""https://example.invalid"",""synthetic"")",Formula must be prefixed in audit
+9,"First line
+second line, with comma and ""quote""",Multiline parser case
+10,"First line
+second line, with comma and ""quote""",Multiline parser case
